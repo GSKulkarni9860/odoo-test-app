@@ -1,39 +1,44 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import TextField from '../../../components/TextField';
 import {REGEX} from '../../../constants';
 import {PRIMARY_COLOR, WHITE} from '../../../constants/colors';
-import axios from 'axios';
+import {authApiCall} from '../utils/authApiCall';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import {useNavigation} from '@react-navigation/native';
 
 const Login = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  // const navigation = useNavigation();
+
+  // useEffect(() => {
+  //   AsyncStorage.getItem('token').then(res => {
+  //     if (res) {
+  //       navigation.navigate('App');
+  //     }
+  //   });
+  // }, []);
+
+  const setAsyncData = async (res: any) => {
+    const tokenString = res.headers['set-cookie']
+      ? res.headers['set-cookie'][0]
+      : null;
+
+    const splitToken = tokenString?.split(';');
+    const token = splitToken ? splitToken[0].split('=') : null;
+
+    try {
+      await AsyncStorage.setItem('token', token[1]);
+    } catch (error) {
+      console.log({error});
+    }
+  };
 
   const handleLogin = () => {
-    const AUTH_URL = 'https://odoo.1logic.in/auth/';
-    const headers = {'Content-type': 'application/json'};
-    const data = {
-      params: {
-        login: userName,
-        password: password,
-        db: 'odoo',
-      },
-    };
-    console.log({AUTH_URL});
-
-    axios
-      .post(AUTH_URL, data, {
-        headers,
-      })
+    authApiCall({userName, password})
       .then(res => {
-        console.log({res});
-        const tokenString = res.headers['set-cookie']
-          ? res.headers['set-cookie'][0]
-          : null;
-
-        const splitToken = tokenString?.split(';');
-        const token = splitToken ? splitToken[0].split('=') : null;
-        console.log({token});
+        setAsyncData(res);
       })
       .catch(err => {
         console.log({err});

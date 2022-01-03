@@ -1,11 +1,11 @@
 import React from 'react';
 import {View} from 'react-native';
-import Login from './src/screens/authScreens/login';
+import Navigation from './src/navigation';
 
 const App = () => {
   return (
     <View style={{flex: 1}}>
-      <Login />
+      <Navigation />
     </View>
   );
 };

@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderWidth: 0.7,
     borderColor: '#8a8a8a',
+    borderRadius: 8,
     marginVertical: 6,
   },
   errorText: {
