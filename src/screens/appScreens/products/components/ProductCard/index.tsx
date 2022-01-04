@@ -11,6 +11,7 @@ import {
   PRIMARY_COLOR,
   WHITE,
 } from '../../../../../constants/colors';
+import {getImageUri} from '../../../../../utilities';
 
 interface ProductCardProps {
   productName: string;
@@ -18,6 +19,7 @@ interface ProductCardProps {
   qty: string;
   type: string;
   id: number;
+  pressCard?: () => void;
 }
 
 const ProductCard = ({
@@ -26,11 +28,12 @@ const ProductCard = ({
   qty,
   type,
   id,
+  pressCard,
 }: ProductCardProps) => {
-  const uri = `https://odoo.1logic.in/web/image?model=product.template&field=image_128&id=${id}&unique=12262021140444`;
+  const uri = getImageUri(id);
   // console.log({uri});
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={pressCard}>
       <View style={styles.imageContainer}>
         <Image source={{uri}} style={styles.image} />
       </View>

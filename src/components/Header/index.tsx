@@ -1,22 +1,40 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {PRIMARY_COLOR, WHITE} from '../../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {globalStyle} from '../../utilities/globalStyle';
 
 interface HeaderProps {
-  title: string;
+  title?: string;
+  showBackButton?: boolean;
+  onBackPress?: () => void;
+  onSearchPress?: () => void;
+  onCartPress?: () => void;
 }
 
-const Header = ({title}: HeaderProps) => (
+const Header = ({
+  title,
+  showBackButton = true,
+  onBackPress,
+  onSearchPress,
+  onCartPress,
+}: HeaderProps) => (
   <View style={[styles.container, globalStyle.row]}>
     <View style={globalStyle.row}>
-      <Icon name="arrow-left" size={20} color={PRIMARY_COLOR} />
-      <Text style={styles.title}>{title}</Text>
+      {showBackButton && (
+        <TouchableOpacity onPress={onBackPress}>
+          <Icon name="arrow-left" size={20} color={PRIMARY_COLOR} />
+        </TouchableOpacity>
+      )}
+      {title && <Text style={styles.title}>{title}</Text>}
     </View>
     <View style={globalStyle.row}>
-      <Icon name="magnify" size={20} color={PRIMARY_COLOR} />
-      <Icon name="cart" size={20} color={PRIMARY_COLOR} />
+      <TouchableOpacity onPress={onSearchPress}>
+        <Icon name="magnify" size={20} color={PRIMARY_COLOR} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onCartPress}>
+        <Icon name="cart" size={20} color={PRIMARY_COLOR} />
+      </TouchableOpacity>
     </View>
   </View>
 );

@@ -3,23 +3,40 @@ import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import Header from '../../../components/Header';
 import {PRIMARY_COLOR} from '../../../constants/colors';
+import {ProductsScreenProps} from '../../../navigation/types';
 import {globalStyle} from '../../../utilities/globalStyle';
+import CategoryList from './components/CategoryList';
 import ProductCard from './components/ProductCard';
-import fetchProductList from './utils/productsApiCalls';
+import {
+  fetchProductCategory,
+  fetchProductList,
+} from './utils/productsApiCalls';
 
-const Products = () => {
+const Products = ({navigation}: ProductsScreenProps) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [categoryList, setCategoryList] = useState([]);
+  const [activeCatId, setActiveCatId] = useState(1);
+
+  useEffect(() => {
+    fetchProductCategory()
+      .then(res => {
+        setCategoryList(res.data.result);
+      })
+      .catch(err => {
+        console.log({err});
+      });
+  }, []);
+
   useEffect(() => {
     setLoading(true);
-    fetchProductList()
+
+    fetchProductList(activeCatId)
       .then(res => {
-        console.log({res});
         setLoading(false);
         setList(res.data.result);
       })
@@ -27,12 +44,23 @@ const Products = () => {
         console.log({err});
         setLoading(false);
       });
-  }, []);
-  console.log({loading});
+  }, [activeCatId]);
+
+  const handleCardPress = (id: number) => {
+    navigation.navigate('ProductDetails', {
+      productId: id,
+    });
+  };
 
   return (
     <View style={globalStyle.container}>
-      <Header title="Products" />
+      <Header title="Flipkart" showBackButton={false} />
+      <CategoryList
+        list={categoryList}
+        onChange={id => {
+          setActiveCatId(id);
+        }}
+      />
       <View style={styles.screen}>
         {loading ? (
           <ActivityIndicator size={'large'} color={PRIMARY_COLOR} />
@@ -48,6 +76,7 @@ const Products = () => {
                 qty={parseFloat(item.qty_available).toFixed(2)}
                 type={item.default_code}
                 id={item.id}
+                pressCard={() => handleCardPress(item.id)}
               />
             )}
           />
@@ -60,11 +89,9 @@ const Products = () => {
 export default Products;
 const styles = StyleSheet.create({
   screen: {
-    // width: '100%',
     flexDirection: 'row',
     flex: 1,
     padding: 4,
     justifyContent: 'center',
-    alignItems: 'center',
   },
 });
